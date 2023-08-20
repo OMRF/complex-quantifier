@@ -1,4 +1,17 @@
 <script lang="ts">
-	// https://github.com/r-wasm/webr/issues/203
+	import {handle} from '$lib/pipeline'
+	let files: FileList;
+
+
+	const run = async () => {
+
+		const file = files?.item(0);
+		if (!file) return;
+
+		await handle(file)
+	}
 </script>
-<input id="fileSelect" type="file" accept=".csv" />
+
+
+<input accept=".csv" bind:files type="file"  />
+<button on:click={run} disabled={files === null}>process</button>

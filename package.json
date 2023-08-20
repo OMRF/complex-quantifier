@@ -32,7 +32,7 @@
 	},
 	"type": "module",
 	"dependencies": {
-		"@r-wasm/webr": "^0.1.1",
-		"clsx": "^2.0.0"
+		"clsx": "^2.0.0",
+		"danfojs": "^1.1.1"
 	}
 }
