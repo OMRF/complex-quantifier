@@ -1,5 +1,3 @@
-import { DataFrame as DFDataFrame, readCSV } from 'danfojs'
-
 type Header = string
 type Headers = Header[]
 type Row = (null | string | number)[]
@@ -162,70 +160,4 @@ const getProteinGroupsGeometricMeans = (groups: Groups): Rows => {
     }
 
     return geometricMeans
-}
-
-export const oldHandle = async (file: File) => {
-    // get the first line of text from file
-    const contents = await file.text()
-    const lines = contents.split('\n')
-    const cols = lines[0].split(',').map((col) => col.toString())
-    let df = await readCSV(file, {
-        // @ts-expect-error
-        header: false,
-        columns: cols,
-    })
-    df.print()
-    // We rename the columns to be equal to the row 2 sample IDs:
-    const newColumnNames = (df.values[1] as string[]).slice(3)
-    let newColumnMappings: {
-        [key: string]: string
-    } = {}
-
-    df.columns.slice(3).forEach((name, i) => {
-        newColumnMappings[name] = newColumnNames[i]
-    })
-
-    debugger
-
-    await df.rename(newColumnMappings, { inplace: true })
-
-    // We remove rows 1-12 and remove null rows, keeping only the data
-    const rowsToDrop = Array.from({ length: 12 }, (_, index) => index)
-
-    df.values.forEach((_row, index) => {
-        const row = _row as (string | number)[]
-        if (row.length !== df.columns.length) {
-            rowsToDrop.push(index)
-        }
-    })
-
-    df = df.drop({ index: rowsToDrop })
-
-    // cast all values to numbers. THIS FIXES THE COLUMN DATA LENGTH MISMATCH!!
-    // the "inplace" boolean in the options parameter DOES NOT WORK. You have to reassign the dataframe by doing df = ...
-    df.columns.slice(2).forEach((column) => {
-        df = df.asType(column, 'float32')
-    })
-
-    // calculate the geometric mean of each protein
-    let proteins = df.groupby(['Protein']).colDict
-
-    const newRows: (string | number)[][] = []
-
-    for (const [protein, _cols] of Object.entries(proteins)) {
-        // omit the first 3 columns because they aren't included in the results
-        const cols = Object.fromEntries(Object.entries(_cols).slice(3)) as {
-            [k: string]: number[]
-        }
-
-        const row: (string | number)[] = [protein]
-
-        for (const [header, numbers] of Object.entries(cols)) {
-            row.push(calcGeoMean(numbers))
-        }
-
-        newRows.push(row)
-    }
-
-    df = new DFDataFrame(newRows, { columns: ['Protein', ...newColumnNames] })
 }

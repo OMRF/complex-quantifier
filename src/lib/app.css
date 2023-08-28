@@ -4,5 +4,5 @@
 
 html,
 body {
-    @apply relative overflow-x-hidden;
+    @apply relative overflow-x-hidden w-full h-full;
 }
