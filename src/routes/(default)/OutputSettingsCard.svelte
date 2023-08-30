@@ -14,7 +14,7 @@
                 handle: z.any(),
             })
             .nullable(),
-        fileNamePattern: z.string(),
+        fileNamePattern: z.string().regex(/^[a-zA-Z0-9\-\_\.\{\}]+$/, { message: 'Please use letters, numbers, dashes, underscores, periods, or curly braces'}),
     })
 </script>
 
