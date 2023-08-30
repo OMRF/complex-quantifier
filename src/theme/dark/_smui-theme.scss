@@ -24,3 +24,8 @@ a {
 a:visited {
   color: color.scale(#40b3ff, $lightness: -35%);
 }
+
+.mdc-notched-outline__notch {
+  border-left-width: 0 !important;
+  border-right-width: 0 !important;
+}

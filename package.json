@@ -47,6 +47,7 @@
 		"@smui/textfield": "^7.0.0-beta.14",
 		"@smui/tooltip": "^7.0.0-beta.14",
 		"@smui/top-app-bar": "^7.0.0-beta.14",
-		"clsx": "^2.0.0"
+		"clsx": "^2.0.0",
+		"zod": "^3.22.2"
 	}
 }
