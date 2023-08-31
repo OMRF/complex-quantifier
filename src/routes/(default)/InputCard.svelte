@@ -48,5 +48,5 @@
         <Set chips={[chipText]} nonInteractive let:chip><Chip {chip}><Text>{chip}</Text></Chip></Set>
     </div>
     <hr class="border-t my-6" />
-    <Textfield class='max-w-xl' label="BSA Concentration" variant="outlined" bind:value={$BSAConcentration} type="number" required />
+    <Textfield class='max-w-xl' label="BSA Concentration" variant="outlined" bind:value={$BSAConcentration} required />
 </Card>
