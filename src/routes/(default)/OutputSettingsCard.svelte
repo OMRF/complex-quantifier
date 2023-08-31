@@ -27,7 +27,7 @@
             saveDirectory: z.object({
                 name: z.string(),
                 handle: z.any(),
-            }, { errorMap: () => ({ message: 'Please select a save directory or turn off automatic saving.' }) }),
+            }, { errorMap: () => ({ message: 'Please select a save directory or turn off automatic saving' }) }),
         }),
     ]).and(baseSchema)
 </script>
