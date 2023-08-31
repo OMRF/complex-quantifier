@@ -13,7 +13,7 @@
     import pipeThroughProcessor from '$lib/pipeline'
     import LinearProgress from '@smui/linear-progress'
 
-    const schema = InputSettingsSchema.merge(GroupsSchema).merge(OutputSettingsSchema)
+    const schema = OutputSettingsSchema.and(GroupsSchema).and(InputSettingsSchema)
 
     let errors: string[] = []
     $: open = errors.length > 0

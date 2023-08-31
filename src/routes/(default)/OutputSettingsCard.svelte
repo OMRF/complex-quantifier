@@ -6,18 +6,30 @@
     export const saveDirectory = writable<FileSystemDirectoryHandle | null>(null)
     export const fileNamePattern = writable('{filename}-{month}{day}{year}-{hours}{minutes}{seconds}')
 
-    export const schema = z.object({
-        shouldSaveAutomatically: z.boolean(),
-        saveDirectory: z
-            .object({
-                name: z.string(),
-                handle: z.any(),
-            })
-            .nullable(),
+    const baseSchema = z.object({
         fileNamePattern: z.string().regex(/^[a-zA-Z0-9\-\_\.\{\}]+$/, {
             message: 'Please use letters, numbers, dashes, underscores, periods, or curly braces',
         }),
     })
+
+    export const schema = z.discriminatedUnion('shouldSaveAutomatically', [
+        z.object({
+            shouldSaveAutomatically: z.literal(false),
+            saveDirectory: z
+                .object({
+                    name: z.string(),
+                    handle: z.any(),
+                })
+                .nullable(),
+        }),
+        z.object({
+            shouldSaveAutomatically: z.literal(true),
+            saveDirectory: z.object({
+                name: z.string(),
+                handle: z.any(),
+            }, { errorMap: () => ({ message: 'Please select a save directory or turn off automatic saving.' }) }),
+        }),
+    ]).and(baseSchema)
 </script>
 
 <script lang="ts">
