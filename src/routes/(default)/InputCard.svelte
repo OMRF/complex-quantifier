@@ -10,8 +10,9 @@
         // parse string to number
         BSAConcentration: z.preprocess(
             Number,
-            z.number().refine(value => value > 0, { message: 'BSA concentration must be greater than 0' })
-        , { errorMap: () => ({ message: 'The BSA Concentration must be a number'})}),
+            z.number().refine(value => value > 0, { message: 'BSA concentration must be greater than 0' }),
+            { errorMap: () => ({ message: 'The BSA Concentration must be a number' }) }
+        ),
     })
 </script>
 

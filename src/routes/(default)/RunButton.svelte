@@ -33,16 +33,15 @@
 
         try {
             const parsed = schema.parse(payload)
+
+            await pipeThroughProcessor(payload)
         } catch (e) {
             if (e instanceof ZodError) {
                 errors = e.errors.map(error => error.message)
             }
 
-            loading = false
             return
         }
-
-        await pipeThroughProcessor(payload)
 
         loading = false
     }
