@@ -4,7 +4,7 @@
 
     export const shouldSaveAutomatically = writable(false)
     export const saveDirectory = writable<FileSystemDirectoryHandle | null>(null)
-    export const fileNamePattern = writable('{filename}')
+    export const fileNamePattern = writable('{filename}-{month}{day}{year}-{hours}{minutes}{seconds}')
 
     export const schema = z.object({
         shouldSaveAutomatically: z.boolean(),
@@ -14,7 +14,9 @@
                 handle: z.any(),
             })
             .nullable(),
-        fileNamePattern: z.string().regex(/^[a-zA-Z0-9\-\_\.\{\}]+$/, { message: 'Please use letters, numbers, dashes, underscores, periods, or curly braces'}),
+        fileNamePattern: z.string().regex(/^[a-zA-Z0-9\-\_\.\{\}]+$/, {
+            message: 'Please use letters, numbers, dashes, underscores, periods, or curly braces',
+        }),
     })
 </script>
 
@@ -27,7 +29,7 @@
     import HelperText from '@smui/textfield/helper-text'
     import Textfield from '@smui/textfield'
 
-    const helperText = `Available: {filename}`
+    const helperText = `Available: {filename}, {year}, {month}, {day}, {hours}, {minutes}, {seconds}`
     $: chipText = $saveDirectory ? $saveDirectory.name : 'No directory selected'
 
     const promptSaveDirectorySelector = async () => {
@@ -54,14 +56,13 @@
             </Button>
             <Set chips={[chipText]} nonInteractive let:chip><Chip {chip}><Text>{chip}</Text></Chip></Set>
         </div>
-
+        <hr class="border-t" />
         <div>
             <Textfield
                 class="w-full max-w-xl"
                 label="File Name Pattern"
                 variant="outlined"
                 bind:value={$fileNamePattern}
-                disabled={!$shouldSaveAutomatically}
                 required
             >
                 <HelperText slot="helper">{helperText}</HelperText>

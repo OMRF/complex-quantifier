@@ -43,7 +43,7 @@ const process = async (
         rows: normalizedWithProteinNames,
     }
 
-    return separateColumnsIntoGroups(df, groups)
+    return createExcelWorkbook(df, groups)
 }
 
 export default process
@@ -172,41 +172,45 @@ const addStatistics = (
     df: DataFrame,
     worksheet: Worksheet,
     skipCols: number,
-    shouldCalculateAveragesAndStd: boolean
+    skipRows: number,
+    shouldCalculateAveragesAndStd: boolean // if this is true, add the AVERAGE and STDEV formulas to the sums row
 ) => {
-    // in a row for sum add the formula =SUM() to the end of each column
-
-    // add an empty row for whitespace
-    // df.rows.push(Array.from({ length: df.headers.length }).fill(null) as Row)
-
-    // // add the SUM formula to the end of each column and also convert header number to column letter
-    // const sumRow = Array.from({ length: df.headers.length }).fill(null) as Row
-    // sumRow[0] = 'Sum'
-    // for (let i = skipCols, max = df.headers.length; i < max; i++) {
-    //     sumRow[i] = `=SUM(${String.fromCharCode(65 + i)}2:${String.fromCharCode(65 + i)}${df.rows.length - 1})`
-    // }
-    // df.rows.push(sumRow)
-
-    // do all the above to the worksheet
-
-    // add an empty row for spacing
-    worksheet.addRow(Array.from({ length: df.headers.length }).fill(null))
+    // add empty whitespace row
+    if (shouldCalculateAveragesAndStd) {
+        worksheet.addRow([...Array.from({ length: df.headers.length + 2 }).fill(null), 'AVG', 'SD'])
+    } else {
+        worksheet.addRow(Array.from({ length: df.headers.length }).fill(null))
+    }
 
     // add the SUM formula to the end of each column and also convert header number to column letter
-    const sumRow = Array.from({ length: df.headers.length }).fill(null)
-    sumRow[0] = 'Sum'
+    let statisticsRow = Array.from({ length: shouldCalculateAveragesAndStd ? df.headers.length + 2 : df.headers.length }).fill(null)
+    statisticsRow[0] = 'Sum'
     for (let i = skipCols, max = df.headers.length; i < max; i++) {
-        sumRow[i] = {
-            formula: `SUM(${String.fromCharCode(65 + i)}2:${String.fromCharCode(65 + i)}${df.rows.length - 1})`,
+        statisticsRow[i] = {
+            formula: `SUM(${String.fromCharCode(65 + i)}${2 + skipRows}:${String.fromCharCode(65 + i)}${df.rows.length + 1})`,
         }
     }
-    worksheet.addRow(sumRow)
+
+    if (shouldCalculateAveragesAndStd) {
+        const sumsSelector = `${String.fromCharCode(65 + skipCols)}${df.rows.length + 3}:${String.fromCharCode(65 + df.headers.length - 1)}${df.rows.length + 3}`
+
+        statisticsRow = [...statisticsRow, {
+            formula: `AVERAGE(${sumsSelector})`
+        }, {
+            formula: `STDEV(${sumsSelector})`
+        }]
+    }
+
+    worksheet.addRow(statisticsRow)
+
 
     return worksheet
 }
 
-const separateColumnsIntoGroups = (df: DataFrame, groups: { name: string; columns: number[] }[]): Workbook => {
+const createExcelWorkbook = (df: DataFrame, groups: { name: string; columns: number[] }[]): Workbook => {
     const workbook = new Workbook()
+
+    df.rows = [Array.from({ length: df.headers.length }).fill(null) as Row, ...df.rows] // add empty row to space out the data from the headers
 
     groups.forEach(group => {
         const worksheet = workbook.addWorksheet(group.name)
@@ -217,7 +221,7 @@ const separateColumnsIntoGroups = (df: DataFrame, groups: { name: string; column
         const rows = df.rows.map(row => row.filter((_, index) => index === 0 || group.columns.includes(index)))
         worksheet.addRows(rows)
 
-        addStatistics(df, worksheet, 1, true)
+        addStatistics({ headers, rows }, worksheet, 1, 2, true)
     })
 
     // add all data to a separate worksheet
@@ -225,7 +229,7 @@ const separateColumnsIntoGroups = (df: DataFrame, groups: { name: string; column
     allDataWorksheet.addRow(df.headers)
     allDataWorksheet.addRows(df.rows)
 
-    addStatistics(df, allDataWorksheet, 1, false)
+    addStatistics(df, allDataWorksheet, 1, 2, false)
 
     return workbook
 }
