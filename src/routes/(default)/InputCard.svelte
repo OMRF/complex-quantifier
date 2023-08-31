@@ -6,12 +6,12 @@
     export const BSAConcentration = writable(8)
 
     export const schema = z.object({
-        inputFile: z
-            .any()
-            .refine((value) => value !== null, { message: 'Input data is required' }),
-        BSAConcentration: z
-            .number()
-            .refine((value) => value > 0, { message: 'BSA concentration must be greater than 0' }),
+        inputFile: z.any().refine(value => value !== null, { message: 'Input data is required' }),
+        // parse string to number
+        BSAConcentration: z.preprocess(
+            Number,
+            z.number().refine(value => value > 0, { message: 'BSA concentration must be greater than 0' })
+        , { errorMap: () => ({ message: 'The BSA Concentration must be a number'})}),
     })
 </script>
 
@@ -48,5 +48,5 @@
         <Set chips={[chipText]} nonInteractive let:chip><Chip {chip}><Text>{chip}</Text></Chip></Set>
     </div>
     <hr class="border-t my-6" />
-    <Textfield class='max-w-xl' label="BSA Concentration" variant="outlined" bind:value={$BSAConcentration} required />
+    <Textfield class="max-w-xl" label="BSA Concentration" variant="outlined" bind:value={$BSAConcentration} required />
 </Card>
