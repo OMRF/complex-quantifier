@@ -39,8 +39,6 @@
             if (e instanceof ZodError) {
                 errors = e.errors.map(error => error.message)
             }
-
-            return
         }
 
         loading = false
