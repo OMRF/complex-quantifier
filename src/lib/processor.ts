@@ -1,4 +1,4 @@
-import { Workbook } from 'exceljs'
+import { Workbook, type Worksheet } from 'exceljs'
 
 type Header = string
 type Headers = Header[]
@@ -9,14 +9,16 @@ type DataFrame = {
     rows: Rows
 }
 
-const NORMALIZING_PROTEIN_CONCENTATION = 8
-
 /* Naming convention
  * - df: DataFrame
  * - a variable ending with Matrix contains only numbers and have the protein names or any other metadata removed
  */
 
-const process = async (file: File, groups: { name: string; columns: number[] }[]): Promise<Workbook> => {
+const process = async (
+    file: File,
+    normalizingProteinConcentration: number,
+    groups: { name: string; columns: number[] }[]
+): Promise<Workbook> => {
     let df = await parseCSV(file)
     df = overwriteHeadersAndCleanupData(df)
 
@@ -32,7 +34,7 @@ const process = async (file: File, groups: { name: string; columns: number[] }[]
         row.map((value, colIndex) => value / BSAValuesMatrix[colIndex])
     )
     const normalizedMatrix = geoMeansDividedByBSAValuesMatrix.map(row =>
-        row.map(value => value * NORMALIZING_PROTEIN_CONCENTATION)
+        row.map(value => value * normalizingProteinConcentration)
     )
     const normalizedWithProteinNames = normalizedMatrix.map((row, index) => [df.rows[index][0], ...row])
 
@@ -166,20 +168,64 @@ const getProteinGroupsGeometricMeans = (groups: Groups): Rows => {
     return geometricMeans
 }
 
+const addStatistics = (
+    df: DataFrame,
+    worksheet: Worksheet,
+    skipCols: number,
+    shouldCalculateAveragesAndStd: boolean
+) => {
+    // in a row for sum add the formula =SUM() to the end of each column
+
+    // add an empty row for whitespace
+    // df.rows.push(Array.from({ length: df.headers.length }).fill(null) as Row)
+
+    // // add the SUM formula to the end of each column and also convert header number to column letter
+    // const sumRow = Array.from({ length: df.headers.length }).fill(null) as Row
+    // sumRow[0] = 'Sum'
+    // for (let i = skipCols, max = df.headers.length; i < max; i++) {
+    //     sumRow[i] = `=SUM(${String.fromCharCode(65 + i)}2:${String.fromCharCode(65 + i)}${df.rows.length - 1})`
+    // }
+    // df.rows.push(sumRow)
+
+    // do all the above to the worksheet
+
+    // add an empty row for spacing
+    worksheet.addRow(Array.from({ length: df.headers.length }).fill(null))
+
+    // add the SUM formula to the end of each column and also convert header number to column letter
+    const sumRow = Array.from({ length: df.headers.length }).fill(null)
+    sumRow[0] = 'Sum'
+    for (let i = skipCols, max = df.headers.length; i < max; i++) {
+        sumRow[i] = {
+            formula: `SUM(${String.fromCharCode(65 + i)}2:${String.fromCharCode(65 + i)}${df.rows.length - 1})`,
+        }
+    }
+    worksheet.addRow(sumRow)
+
+    return worksheet
+}
+
 const separateColumnsIntoGroups = (df: DataFrame, groups: { name: string; columns: number[] }[]): Workbook => {
     const workbook = new Workbook()
 
     groups.forEach(group => {
         const worksheet = workbook.addWorksheet(group.name)
 
-        const headers = df.headers.filter((_, index) => group.columns.includes(index + 1))
+        const headers = df.headers.filter((_, index) => index === 0 || group.columns.includes(index))
         worksheet.addRow(headers)
 
-        df.rows.forEach(row => {
-            const values = row.filter((_, index) => group.columns.includes(index + 1))
-            worksheet.addRow(values)
-        })
+        const rows = df.rows.map(row => row.filter((_, index) => index === 0 || group.columns.includes(index)))
+        worksheet.addRows(rows)
+
+        addStatistics(df, worksheet, 1, true)
     })
+
+    // add all data to a separate worksheet
+    const allDataWorksheet = workbook.addWorksheet('All data')
+    allDataWorksheet.addRow(df.headers)
+    allDataWorksheet.addRows(df.rows)
+
+    addStatistics(df, allDataWorksheet, 1, false)
 
     return workbook
 }

@@ -11,13 +11,17 @@
     import Dialog, { Title, Content, Actions } from '@smui/dialog'
     import { ZodError } from 'zod'
     import pipeThroughProcessor from '$lib/pipeline'
+    import LinearProgress from '@smui/linear-progress'
 
     const schema = InputSettingsSchema.merge(GroupsSchema).merge(OutputSettingsSchema)
 
     let errors: string[] = []
     $: open = errors.length > 0
 
+    let loading = false
     const handle = async () => {
+        loading = true
+
         const payload = {
             inputFile: $inputFile as File,
             BSAConcentration: $BSAConcentration,
@@ -34,10 +38,13 @@
                 errors = e.errors.map(error => error.message)
             }
 
+            loading = false
             return
         }
 
-        pipeThroughProcessor(payload)
+        await pipeThroughProcessor(payload)
+
+        loading = false
     }
 </script>
 
@@ -63,6 +70,10 @@
     </Actions>
 </Dialog>
 
-<Button variant="unelevated" on:click={handle}>
+<Button variant="unelevated" on:click={handle} disabled={loading}>
     <Label>Run</Label>
 </Button>
+
+{#if loading}
+    <LinearProgress class='mt-3' indeterminate />
+{/if}
