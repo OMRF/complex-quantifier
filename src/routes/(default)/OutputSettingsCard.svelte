@@ -68,10 +68,9 @@
                 <div class="overflow-hidden relative">
                     <div class='flex items-center space-x-1 absolute transition duration-500' class:-translate-y-full={!isFolderSelected}>
                         <Icon src={Check} class="w-5 h-5 text-muted-foreground" mini />
-                        <p class="text-sm text-muted-foreground">Autosave is enabled.</p>
+                        <p class="text-sm text-muted-foreground">Autosave is enabled</p>
                     </div>
                     <div class='flex items-center space-x-1 relative transition duration-500' class:translate-y-full={isFolderSelected}>
-                        <Icon src={XCircle} class="w-5 h-5 text-muted-foreground" mini />
                         <p class="text-sm text-muted-foreground">
                             Autosave is disabled. Select a save folder to enable.
                         </p>
