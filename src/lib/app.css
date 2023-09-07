@@ -1,8 +1,0 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
-html,
-body {
-    @apply relative overflow-x-hidden w-full h-full;
-}

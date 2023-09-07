@@ -1,84 +1,27 @@
-<script context="module" lang="ts">
-    import { writable } from 'svelte/store'
-    import { z } from 'zod'
+<script>
+    import { Button } from '$lib/components/ui/button'
 
-    export const shouldSaveAutomatically = writable(false)
-    export const saveDirectory = writable<FileSystemDirectoryHandle | null>(null)
-    export const fileNamePattern = writable('{filename}-{month}{day}{year}-{hours}{minutes}{seconds}')
-
-    const baseSchema = z.object({
-        fileNamePattern: z.string().regex(/^[a-zA-Z0-9\-\_\.\{\}]+$/, {
-            message: 'Please use letters, numbers, dashes, underscores, periods, or curly braces',
-        }),
-    })
-
-    export const schema = z.discriminatedUnion('shouldSaveAutomatically', [
-        z.object({
-            shouldSaveAutomatically: z.literal(false),
-            saveDirectory: z
-                .object({
-                    name: z.string(),
-                    handle: z.any(),
-                })
-                .nullable(),
-        }),
-        z.object({
-            shouldSaveAutomatically: z.literal(true),
-            saveDirectory: z.object({
-                name: z.string(),
-                handle: z.any(),
-            }, { errorMap: () => ({ message: 'Please select a save directory or turn off automatic saving' }) }),
-        }),
-    ]).and(baseSchema)
+    import * as Card from '$lib/components/ui/card'
+    import { Input } from '$lib/components/ui/input'
+    import { Label } from '$lib/components/ui/label'
 </script>
 
-<script lang="ts">
-    import Card from '@smui/card'
-    import FormField from '@smui/form-field'
-    import Switch from '@smui/switch'
-    import Button, { Label } from '@smui/button'
-    import Chip, { Set, Text } from '@smui/chips'
-    import HelperText from '@smui/textfield/helper-text'
-    import Textfield from '@smui/textfield'
-
-    const helperText = `Available: {filename}, {year}, {month}, {day}, {hours}, {minutes}, {seconds}`
-    $: chipText = $saveDirectory ? $saveDirectory.name : 'No directory selected'
-
-    const promptSaveDirectorySelector = async () => {
-        const directory = await window.showDirectoryPicker({
-            mode: 'readwrite',
-            startIn: 'downloads',
-        })
-
-        $saveDirectory = directory
-    }
-</script>
-
-<Card padded class="flex flex-col">
-    <h2 class="mdc-typography--headline5">Output Settings</h2>
-    <div class="flex flex-col gap-6 mt-5">
-        <FormField>
-            <Switch bind:checked={$shouldSaveAutomatically} />
-            <span slot="label">Save Automatically</span>
-        </FormField>
-
-        <div class="flex items-center gap-3">
-            <Button variant="outlined" on:click={promptSaveDirectorySelector} disabled={!$shouldSaveAutomatically}>
-                <Label>Select Output Directory</Label>
-            </Button>
-            <Set chips={[chipText]} nonInteractive let:chip><Chip {chip}><Text>{chip}</Text></Chip></Set>
-        </div>
-        <hr class="border-t" />
-        <div>
-            <Textfield
-                class="w-full max-w-xl"
-                label="File Name Pattern"
-                variant="outlined"
-                bind:value={$fileNamePattern}
-                required
-            >
-                <HelperText slot="helper">{helperText}</HelperText>
-            </Textfield>
-        </div>
-    </div>
-</Card>
+<Card.Root class="col-span-2">
+    <Card.Header>
+        <Card.Title>Output settings</Card.Title>
+    </Card.Header>
+    <Card.Content>
+        <form>
+            <div class="grid w-full items-center gap-4">
+                <div class="flex flex-col space-y-1.5">
+                    <Label for="name">Name</Label>
+                    <Input id="name" placeholder="Name of your project" />
+                </div>
+            </div>
+        </form>
+    </Card.Content>
+    <Card.Footer class="flex justify-between">
+        <Button variant="outline">Cancel</Button>
+        <Button>Deploy</Button>
+    </Card.Footer>
+</Card.Root>

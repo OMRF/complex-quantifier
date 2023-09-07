@@ -37,6 +37,7 @@
 	},
 	"type": "module",
 	"dependencies": {
+		"@fontsource-variable/inter": "^5.0.8",
 		"@material/typography": "^14.0.0",
 		"@smui/button": "^7.0.0-beta.14",
 		"@smui/card": "^7.0.0-beta.14",
@@ -49,8 +50,13 @@
 		"@smui/textfield": "^7.0.0-beta.14",
 		"@smui/tooltip": "^7.0.0-beta.14",
 		"@smui/top-app-bar": "^7.0.0-beta.14",
+		"bits-ui": "^0.5.6",
 		"clsx": "^2.0.0",
 		"exceljs": "^4.3.0",
+		"lucide-svelte": "^0.274.0",
+		"svelte-hero-icons": "^5.0.0",
+		"tailwind-merge": "^1.14.0",
+		"tailwind-variants": "^0.1.14",
 		"zod": "^3.22.2"
 	}
 }
