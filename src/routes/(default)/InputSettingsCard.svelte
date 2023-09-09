@@ -1,9 +1,5 @@
 <script context="module" lang="ts">
-    import { writable } from 'svelte/store'
     import z from 'zod'
-
-    export const inputFile = writable<File | null>(null)
-    export const BSAConcentration = writable(8)
 
     export const schema = z.object({
         inputFile: z.any().refine(value => value !== null, { message: 'Input data is required' }),
@@ -22,10 +18,16 @@
     import { Input } from '$lib/components/ui/input'
     import { Label } from '$lib/components/ui/label'
     import { Icon, DocumentChartBar } from 'svelte-hero-icons'
+    import { getContext } from 'svelte'
+    import type { Form } from '$lib/utils'
+
+    const { data, setData }: Form = getContext('form')
 
     let isSelecting = false
-    $: filename = $inputFile ? $inputFile.name : 'No file selected'
-    $: isFileSelected = $inputFile !== null
+    $: inputFile = $data.inputFile as File | null
+
+    $: filename = inputFile ? inputFile.name : 'No file selected'
+    $: isFileSelected = inputFile !== null
 
     const selectInputData = async () => {
         isSelecting = true
@@ -41,7 +43,7 @@
                 ],
             })
 
-            $inputFile = await fileHandle.getFile()
+            setData('inputFile', await fileHandle.getFile())
         } catch {}
         isSelecting = false
     }
@@ -59,11 +61,8 @@
                     class="h-10 grow border p-2 rounded-md overflow-hidden transition"
                     class:border-transparent={!isFileSelected}
                 >
-                    {#key $inputFile}
-                        <div
-                            class="flex items-center space-x-2 fade-in-right"
-                            class:hidden={!isFileSelected}
-                        >
+                    {#key inputFile}
+                        <div class="flex items-center space-x-2 fade-in-right" class:hidden={!isFileSelected}>
                             <Icon src={DocumentChartBar} class="w-6 h-6 shrink-0" solid />
                             <p class="text-sm truncate">{filename}</p>
                         </div>
@@ -72,7 +71,7 @@
             </div>
             <div class="flex flex-col space-y-1.5">
                 <Label for="name">BSA Concentration</Label>
-                <Input bind:value={$BSAConcentration} />
+                <Input type="number" name="BSAConcentration" step="0.000000001" />
             </div>
         </div>
     </Card.Content>

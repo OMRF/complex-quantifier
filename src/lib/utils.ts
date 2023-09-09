@@ -1,7 +1,10 @@
-import { type ClassValue, clsx } from "clsx";
-import { twMerge } from "tailwind-merge";
+import type { Form as FelteForm, KnownHelpers, KnownStores, Paths } from '@felte/core';
+import { clsx, type ClassValue } from "clsx";
 import { cubicOut } from "svelte/easing";
 import type { TransitionConfig } from "svelte/transition";
+import { twMerge } from "tailwind-merge";
+
+export type Form<Data extends Record<string, any> = any> = FelteForm<Data> & KnownHelpers<Data, Paths<Data>> & KnownStores<Data>
 
 export function cn(...inputs: ClassValue[]) {
     return twMerge(clsx(inputs));

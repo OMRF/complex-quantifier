@@ -3,5 +3,5 @@
 </script>
 
 <div class="flex justify-end pb-4">
-    <Button>Run calculations</Button>
+    <Button type='submit'>Run calculations</Button>
 </div>

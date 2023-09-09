@@ -31,6 +31,9 @@
     import IconButton from '@smui/icon-button'
     import Textfield from '@smui/textfield'
     import Tooltip, { Wrapper } from '@smui/tooltip'
+    import type { Form } from '$lib/utils'
+
+    const { data, setData }: Form = getContext('form')
 
     $: if ($groups.length === 0) $groups = [{ name: '', columns: '' }]
 
