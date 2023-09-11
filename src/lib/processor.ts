@@ -1,4 +1,6 @@
-import { Workbook, type Worksheet } from 'exceljs'
+import pkg, { type Worksheet } from 'exceljs'
+
+const { Workbook } = pkg
 
 type Header = string
 type Headers = Header[]
@@ -18,7 +20,7 @@ const process = async (
     file: File,
     normalizingProteinConcentration: number,
     groups: { name: string; columns: number[] }[]
-): Promise<Workbook> => {
+) => {
     let df = await parseCSV(file)
     df = overwriteHeadersAndCleanupData(df)
 
@@ -217,7 +219,7 @@ const addStatistics = (
     return worksheet
 }
 
-const createExcelWorkbook = (df: DataFrame, groups: { name: string; columns: number[] }[]): Workbook => {
+const createExcelWorkbook = (df: DataFrame, groups: { name: string; columns: number[] }[]) => {
     const workbook = new Workbook()
 
     df.rows = [Array.from({ length: df.headers.length }).fill(null) as Row, ...df.rows] // add empty row to space out the data from the headers
