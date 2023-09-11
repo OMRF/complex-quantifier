@@ -1,4 +1,6 @@
-import { Workbook, type Worksheet } from 'exceljs'
+import pkg, { type Worksheet } from 'exceljs'
+
+const { Workbook } = pkg
 
 type Header = string
 type Headers = Header[]
