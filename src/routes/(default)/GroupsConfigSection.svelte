@@ -68,6 +68,7 @@
                 />
                 {#if i !== 0 || group.columns !== '' || group.name !== '' || groups.length > 1}
                     <button
+                        type='button'
                         class="absolute text-sm bg-secondary hover:bg-destructive hover:text-white px-3 py-1 right-0 rounded-tr-lg rounded-bl-lg transition"
                         on:click={() => removeGroup(i)}
                     >
@@ -78,6 +79,6 @@
         {/each}
     </div>
     <div class="flex justify-center pb-3">
-        <Button class="mx-auto" variant="secondary" on:click={addGroup}>Add group</Button>
+        <Button class="mx-auto" variant="secondary" on:click={addGroup} type='button'>Add group</Button>
     </div>
 </div>

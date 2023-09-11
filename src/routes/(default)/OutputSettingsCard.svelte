@@ -61,12 +61,10 @@
                         class="h-10 grow border p-2 rounded-md overflow-hidden transition"
                         class:border-transparent={!isFolderSelected}
                     >
-                        {#key saveFolder}
-                            <div class="flex items-center space-x-2 fade-in-right" class:hidden={!isFolderSelected}>
-                                <Icon src={Folder} class="w-6 h-6 shrink-0" solid />
-                                <p class="text-sm truncate">{folderName}</p>
-                            </div>
-                        {/key}
+                        <div class="flex items-center space-x-2 fade-in-right" class:hidden={!isFolderSelected}>
+                            <Icon src={Folder} class="w-6 h-6 shrink-0" solid />
+                            <p class="text-sm truncate">{folderName}</p>
+                        </div>
                     </div>
                 </div>
                 <div class="overflow-hidden relative">
@@ -89,7 +87,7 @@
             </div>
             <div class="flex flex-col space-y-1.5">
                 <Label for="name">Filename Pattern</Label>
-                <Input name='filenamePattern' value={`{filename}-{month}{day}{year}-{hours}{minutes}{seconds}`} />
+                <Input name="filenamePattern" value={`{filename}-{month}{day}{year}-{hours}{minutes}{seconds}`} />
                 <div class="flex flex-wrap gap-2">
                     <p class="text-sm text-muted-foreground">Available:</p>
                     {#each availablePatterns as pattern}

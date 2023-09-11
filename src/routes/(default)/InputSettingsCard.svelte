@@ -61,12 +61,10 @@
                     class="h-10 grow border p-2 rounded-md overflow-hidden transition"
                     class:border-transparent={!isFileSelected}
                 >
-                    {#key inputFile}
-                        <div class="flex items-center space-x-2 fade-in-right" class:hidden={!isFileSelected}>
-                            <Icon src={DocumentChartBar} class="w-6 h-6 shrink-0" solid />
-                            <p class="text-sm truncate">{filename}</p>
-                        </div>
-                    {/key}
+                    <div class="flex items-center space-x-2 fade-in-right" class:hidden={!isFileSelected}>
+                        <Icon src={DocumentChartBar} class="w-6 h-6 shrink-0" solid />
+                        <p class="text-sm truncate">{filename}</p>
+                    </div>
                 </div>
             </div>
             <div class="flex flex-col space-y-1.5">

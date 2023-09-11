@@ -1,20 +1,43 @@
 <script lang="ts">
     import { createForm } from 'felte'
     import BrowserCompatibilityChecker from './BrowserCompatibilityChecker.svelte'
-    import GroupsConfigSection from './GroupsConfigSection.svelte'
-    import InputSettingsCard from './InputSettingsCard.svelte'
-    import OutputSettingsCard from './OutputSettingsCard.svelte'
+    import GroupsConfigSection, { schema as GroupsSchema } from './GroupsConfigSection.svelte'
+    import InputSettingsCard, { schema as InputSettingsSchema } from './InputSettingsCard.svelte'
+    import OutputSettingsCard, { schema as OutputSettingsSchema } from './OutputSettingsCard.svelte'
     import RunButton from './RunButton.svelte'
     import { setContext } from 'svelte'
+    import { validator } from '@felte/validator-zod'
+    import pipeThroughProcessor from '$lib/pipeline'
+    import { ZodError } from 'zod'
+    import ValidationMessagesDialog from './ValidationMessagesDialog.svelte'
+
+    const schema = InputSettingsSchema.merge(OutputSettingsSchema).merge(GroupsSchema)
+
+    let errors: string[] = []
 
     const form = createForm({
         initialValues: {
-            inputFile: null,
-            saveFolder: null,
+            inputFile: null as File | null,
+            BSAConcentration: 8,
+            saveFolder: null as FileSystemDirectoryHandle | null,
             groups: [{ name: '', columns: '' }],
+            filenamePattern: '{filename}-{month}{day}{year}-{hours}{minutes}{seconds}',
         },
-        onSubmit(values, context) {
-            console.log({ values, context })
+        async onSubmit(values, context) {
+            try {
+                const parsed = schema.parse(values)
+
+                const payload = {
+                    ...values,
+                    inputFile: values.inputFile as File,
+                }
+
+                await pipeThroughProcessor(payload)
+            } catch (e) {
+                if (e instanceof ZodError) {
+                    errors = e.errors.map(error => error.message)
+                }
+            }
         },
     })
 
@@ -32,3 +55,5 @@
 </form>
 
 <BrowserCompatibilityChecker />
+
+<ValidationMessagesDialog bind:errors />

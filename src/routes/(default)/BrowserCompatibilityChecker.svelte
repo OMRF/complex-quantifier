@@ -24,7 +24,7 @@
     })
 </script>
 
-<AlertDialog.Root open={unsupportedFeatures.length > 0}>
+<AlertDialog.Root open={unsupportedFeatures.length > 0} closeOnEscape={false}>
     <AlertDialog.Content>
         <AlertDialog.Header>
             <AlertDialog.Title>Browser unsupported</AlertDialog.Title>

@@ -1,27 +1,38 @@
 <script lang="ts">
-	import { Button as ButtonPrimitive } from "bits-ui";
-	import { cn } from "$lib/utils";
-	import { buttonVariants, type Size, type Variant } from ".";
+    import { Button as ButtonPrimitive } from 'bits-ui'
+    import { cn } from '$lib/utils'
+    import { buttonVariants, type Size, type Variant } from '.'
+    import Spinner from '$lib/components/Spinner.svelte'
 
-	type $$Props = ButtonPrimitive.Props & {
-		variant?: Variant;
-		size?: Size;
-	};
-	type $$Events = ButtonPrimitive.Events;
+    type $$Props = ButtonPrimitive.Props & {
+        variant?: Variant
+        size?: Size
+        loading?: boolean
+        disabled?: boolean
+    }
+    type $$Events = ButtonPrimitive.Events
 
-	let className: $$Props["class"] = undefined;
-	export let variant: $$Props["variant"] = "default";
-	export let size: $$Props["size"] = "default";
-	export let builders: $$Props["builders"] = [];
-	export { className as class };
+    let className: $$Props['class'] = undefined
+    export let variant: $$Props['variant'] = 'default'
+    export let size: $$Props['size'] = 'default'
+    export let builders: $$Props['builders'] = []
+    export let loading: $$Props['loading'] = false
+    export let disabled: $$Props['disabled'] = false
+    export { className as class }
 </script>
 
 <ButtonPrimitive.Root
-	{builders}
-	class={cn(buttonVariants({ variant, size, className }))}
-	{...$$restProps}
-	on:click
-	on:keydown
+    {builders}
+    class={cn(buttonVariants({ variant, size, className }))}
+    disabled={disabled || loading}
+    {...$$restProps}
+    on:click
+    on:keydown
 >
-	<slot />
+    {#if loading}
+        <Spinner class='mr-2 h-4 w-4' />
+    {:else}
+        <slot name="icon" />
+    {/if}
+    <slot />
 </ButtonPrimitive.Root>

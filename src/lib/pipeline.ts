@@ -5,9 +5,8 @@ interface Payload {
     inputFile: File
     BSAConcentration: number
     groups: { name: string, columns: string }[]
-    shouldSaveAutomatically: boolean
-    saveDirectory: FileSystemDirectoryHandle | null
-    fileNamePattern: string
+    saveFolder: FileSystemDirectoryHandle | null
+    filenamePattern: string
 }
 
 const pipeThroughProcessor = async (payload: Payload) => {
@@ -20,10 +19,10 @@ const pipeThroughProcessor = async (payload: Payload) => {
 
     const workbook = await process(payload.inputFile, payload.BSAConcentration, groups)
 
-    const filename = createFilename(payload.fileNamePattern, payload.inputFile) + '.xlsx'
+    const filename = createFilename(payload.filenamePattern, payload.inputFile) + '.xlsx'
 
-    if (payload.shouldSaveAutomatically) {
-        const fileHandle = await payload.saveDirectory!.getFileHandle(filename, { create: true })
+    if (payload.saveFolder) {
+        const fileHandle = await payload.saveFolder.getFileHandle(filename, { create: true })
         const writableFile = await fileHandle.createWritable()
 
         // @ts-expect-error: It works but the types are wrong

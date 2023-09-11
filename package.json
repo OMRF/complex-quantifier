@@ -37,6 +37,7 @@
 	},
 	"type": "module",
 	"dependencies": {
+		"@felte/validator-zod": "^1.0.17",
 		"@fontsource-variable/inter": "^5.0.8",
 		"@material/typography": "^14.0.0",
 		"@smui/button": "^7.0.0-beta.14",
