@@ -168,6 +168,16 @@ const getProteinGroupsGeometricMeans = (groups: Groups): Rows => {
     return geometricMeans
 }
 
+// write a function that converts column index to column letter (excel style). make it handle over 26 columns
+const columnIndexToLetter = (index: number): string => {
+    let columnLetter = '';
+    while (index >= 0) {
+      columnLetter = String.fromCharCode(index % 26 + 65) + columnLetter;
+      index = Math.floor(index / 26) - 1;
+    }
+    return columnLetter;
+}
+
 const addStatistics = (
     df: DataFrame,
     worksheet: Worksheet,
@@ -187,12 +197,12 @@ const addStatistics = (
     statisticsRow[0] = 'Sum'
     for (let i = skipCols, max = df.headers.length; i < max; i++) {
         statisticsRow[i] = {
-            formula: `SUM(${String.fromCharCode(65 + i)}${2 + skipRows}:${String.fromCharCode(65 + i)}${df.rows.length + 1})`,
+            formula: `SUM(${columnIndexToLetter(i)}${2 + skipRows}:${columnIndexToLetter(i)}${df.rows.length + 1})`,
         }
     }
 
     if (shouldCalculateAveragesAndStd) {
-        const sumsSelector = `${String.fromCharCode(65 + skipCols)}${df.rows.length + 3}:${String.fromCharCode(65 + df.headers.length - 1)}${df.rows.length + 3}`
+        const sumsSelector = `${columnIndexToLetter(skipCols)}${df.rows.length + 3}:${columnIndexToLetter(df.headers.length - 1)}${df.rows.length + 3}`
 
         statisticsRow = [...statisticsRow, {
             formula: `AVERAGE(${sumsSelector})`
