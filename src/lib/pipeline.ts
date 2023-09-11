@@ -1,5 +1,4 @@
 import process from '$lib/processor'
-import { Workbook } from 'exceljs'
 
 interface Payload {
     inputFile: File
