@@ -6,7 +6,6 @@
     import OutputSettingsCard, { schema as OutputSettingsSchema } from './OutputSettingsCard.svelte'
     import RunButton from './RunButton.svelte'
     import { setContext } from 'svelte'
-    import { validator } from '@felte/validator-zod'
     import pipeThroughProcessor from '$lib/pipeline'
     import { ZodError } from 'zod'
     import ValidationMessagesDialog from './ValidationMessagesDialog.svelte'
