@@ -1,0 +1,29 @@
+name: Tests
+on:
+    push:
+        branches:
+            - 'develop'
+    pull_request:
+
+jobs:
+    tests:
+        strategy:
+            fail-fast: false
+            matrix:
+                platform: [windows-latest]
+
+        runs-on: ${{ matrix.platform }}
+        steps:
+            - uses: actions/checkout@v3
+            - name: setup node
+              uses: actions/setup-node@v3
+              with:
+                  node-version: 18
+            - name: install Rust stable
+              uses: dtolnay/rust-toolchain@stable
+            - name: install dependencies
+              run: npm install
+            - name: check Rust backend
+              run: cargo check --manifest-path src-tauri/Cargo.toml
+            - name: test build JS frontend
+              run: npm run build
