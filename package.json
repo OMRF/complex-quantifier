@@ -5,6 +5,7 @@
 	"scripts": {
 		"dev": "vite dev --host",
 		"build": "vite build",
+		"tauri": "tauri",
 		"preview": "vite preview",
 		"test": "npm run test:integration && npm run test:unit",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
@@ -17,7 +18,9 @@
 	"devDependencies": {
 		"@playwright/test": "^1.28.1",
 		"@sveltejs/adapter-auto": "^2.0.0",
+		"@sveltejs/adapter-static": "^2.0.3",
 		"@sveltejs/kit": "^1.20.4",
+		"@tauri-apps/cli": "^1.5.5",
 		"@types/wicg-file-system-access": "^2020.9.6",
 		"autoprefixer": "^10.4.14",
 		"postcss": "^8.4.27",
