@@ -8,11 +8,16 @@
   },
   "package": {
     "productName": "complex-quantifier",
-    "version": "0.1.0"
+    "version": "0.0.0"
   },
   "tauri": {
     "allowlist": {
-      "all": false
+      "all": false,
+      "app": {
+        "all": true,
+        "hide": false,
+        "show": false
+      }
     },
     "bundle": {
       "active": true,
