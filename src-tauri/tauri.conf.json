@@ -34,7 +34,7 @@
         "icons/icon.icns",
         "icons/icon.ico"
       ],
-      "identifier": "com.tauri.dev",
+      "identifier": "com.performave.complex-quantifier",
       "longDescription": "",
       "macOS": {
         "entitlements": null,
