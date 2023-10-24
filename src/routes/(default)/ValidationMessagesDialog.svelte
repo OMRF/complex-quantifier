@@ -18,7 +18,7 @@
             </ul>
         </AlertDialog.Header>
         <AlertDialog.Footer>
-            <AlertDialog.Action on:click={() => errors = []}>Ok</AlertDialog.Action>
+            <AlertDialog.Action on:click={() => errors = []}>OK</AlertDialog.Action>
           </AlertDialog.Footer>
     </AlertDialog.Content>
 </AlertDialog.Root>
