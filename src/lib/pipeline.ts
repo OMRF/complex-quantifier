@@ -1,10 +1,12 @@
 import process from '$lib/processor'
+import { save } from '@tauri-apps/api/dialog'
+import { writeBinaryFile, BaseDirectory } from '@tauri-apps/api/fs'
 
 interface Payload {
     inputFile: File
     BSAConcentration: number
-    groups: { name: string, columns: string }[]
-    saveFolder: FileSystemDirectoryHandle | null
+    groups: { name: string; columns: string }[]
+    saveFolderPath: string | null
     filenamePattern: string
 }
 
@@ -12,7 +14,7 @@ const pipeThroughProcessor = async (payload: Payload) => {
     const groups = payload.groups.map(group => {
         return {
             name: group.name,
-            columns: group.columns.split(',').map(col => Number(col))
+            columns: group.columns.split(',').map(col => Number(col)),
         }
     })
 
@@ -20,29 +22,29 @@ const pipeThroughProcessor = async (payload: Payload) => {
 
     const filename = createFilename(payload.filenamePattern, payload.inputFile) + '.xlsx'
 
-    if (payload.saveFolder) {
-        const fileHandle = await payload.saveFolder.getFileHandle(filename, { create: true })
-        const writableFile = await fileHandle.createWritable()
+    if (payload.saveFolderPath) {
+        const buffer = await workbook.xlsx.writeBuffer()
 
-        // @ts-expect-error: It works but the types are wrong
-        await workbook.xlsx.write(writableFile)
-
-        await writableFile.close()
+        await writeBinaryFile(`${payload.saveFolderPath}/${filename}`, buffer)
     } else {
-        const fileHandle = await window.showSaveFilePicker({
-                types: [{
-                    description: 'Complex quantification results',
-                    accept: { 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': ['.xlsx'] }
-                }],
-                suggestedName: filename
+        const filePath = await save({
+            filters: [
+                {
+                    name: 'Complex quantification results',
+                    extensions: ['xlsx'],
+                },
+            ],
+
+            defaultPath: filename,
         })
 
-        const writableFile = await fileHandle.createWritable()
+        if (!filePath) {
+            return
+        }
 
-        // @ts-expect-error: It works but the types are wrong
-        await workbook.xlsx.write(writableFile)
+        const buffer = await workbook.xlsx.writeBuffer()
 
-        await writableFile.close()
+        await writeBinaryFile(filePath, buffer)
     }
 }
 

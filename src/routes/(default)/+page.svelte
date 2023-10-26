@@ -18,13 +18,13 @@
         initialValues: {
             inputFile: null as File | null,
             BSAConcentration: 8,
-            saveFolder: null as FileSystemDirectoryHandle | null,
+            saveFolderPath: null as string | null,
             groups: [{ name: '', columns: '' }],
             filenamePattern: '{filename}-{month}{day}{year}-{hours}{minutes}{seconds}',
         },
-        async onSubmit(values, context) {
+        async onSubmit(values) {
             try {
-                const parsed = schema.parse(values)
+                schema.parse(values)
 
                 const payload = {
                     ...values,
@@ -36,6 +36,8 @@
                 if (e instanceof ZodError) {
                     errors = e.errors.map(error => error.message)
                 }
+
+                console.error(e)
             }
         },
     })

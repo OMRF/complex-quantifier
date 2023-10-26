@@ -5,7 +5,7 @@
     export const filenamePattern = writable('{filename}-{month}{day}{year}-{hours}{minutes}{seconds}')
 
     export const schema = z.object({
-        saveFolder: z.any(),
+        saveFolderPath: z.any(),
         filenamePattern: z.string().regex(/^[a-zA-Z0-9\-\_\.\{\}]+$/, {
             message: 'Please use letters, numbers, dashes, underscores, periods, or curly braces',
         }),
@@ -21,6 +21,7 @@
     import { Label } from '$lib/components/ui/label'
     import { getContext } from 'svelte'
     import type { Form } from '$lib/utils'
+    import { open } from '@tauri-apps/api/dialog';
 
     const { data, setData }: Form = getContext('form')
 
@@ -28,19 +29,18 @@
 
     let isSelecting = false
 
-    $: saveFolder = $data.saveFolder as FileSystemDirectoryHandle | null
-    $: folderName = saveFolder ? saveFolder.name : 'No folder selected'
-    $: isFolderSelected = saveFolder !== null
+    $: saveFolderPath = $data.saveFolderPath as string | null
+    $: folderName = saveFolderPath ? saveFolderPath.split('\\').slice(-1) : 'No folder selected'
+    $: isFolderSelected = saveFolderPath !== null
 
     const selectSaveFolder = async () => {
         isSelecting = true
         try {
-            const directory = await window.showDirectoryPicker({
-                mode: 'readwrite',
-                startIn: 'downloads',
+            const directory = await open({
+                directory: true,
             })
 
-            setData('saveFolder', directory)
+            setData('saveFolderPath', directory as string | null)
         } catch {}
         isSelecting = false
     }
