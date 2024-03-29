@@ -59,6 +59,7 @@ jobs:
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
               with:
+                  args: "--target ${{ matrix.platform.rust_target }}"
                   tagName: ${{ github.ref }}
                   releaseName: ${{ steps.bump_version.outputs.version_name }}
                   releaseDraft: true
