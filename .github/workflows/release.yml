@@ -13,9 +13,7 @@ jobs:
       matrix:
         platform:
           - os: 'macos-latest' # for Arm based macs (M1 and above).
-            args: '--target aarch64-apple-darwin'
-          - os: 'macos-latest' # for Intel based macs.
-            args: '--target x86_64-apple-darwin'
+            args: '--target aarch64-apple-darwin --target x86_64-apple-darwin'
           - os: 'ubuntu-22.04' # for Tauri v1 you could replace this with ubuntu-20.04.
             args: ''
           - os: 'windows-latest'
