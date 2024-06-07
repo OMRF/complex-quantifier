@@ -18,7 +18,9 @@ jobs:
             args: '--target x86_64-apple-darwin'
           - os: 'ubuntu-22.04' # for Tauri v1 you could replace this with ubuntu-20.04.
             args: ''
-          - os: 'windows-latest'
+          - os: 'windows-latest' # for Arm based windows
+            args: '--target aarch64-pc-windows-msvc'
+          - os: 'windows-latest' # for x86 builds
             args: ''
 
     runs-on: ${{ matrix.platform.os }}
