@@ -18,9 +18,7 @@ jobs:
             args: '--target x86_64-apple-darwin'
           - os: 'ubuntu-22.04' # for Tauri v1 you could replace this with ubuntu-20.04.
             args: ''
-          - os: 'windows-latest' # for Arm based windows
-            args: '--target aarch64-pc-windows-msvc'
-          - os: 'windows-latest' # for x86 builds
+          - os: 'windows-latest'
             args: ''
 
     runs-on: ${{ matrix.platform.os }}
@@ -58,7 +56,7 @@ jobs:
         uses: dtolnay/rust-toolchain@stable
         with:
           # Those targets are only used on macos runners so it's in an `if` to slightly speed up windows and linux builds.
-          targets: ${{ matrix.platform.os == 'macos-latest' && 'aarch64-apple-darwin,x86_64-apple-darwin' || (matrix.platform.os == 'windows-latest' && 'aarch64-pc-windows-msvc' || '') }}
+          targets: ${{ matrix.platform.os == 'macos-latest' && 'aarch64-apple-darwin,x86_64-apple-darwin' || '' }}
 
       - name: Rust cache
         uses: swatinem/rust-cache@v2
