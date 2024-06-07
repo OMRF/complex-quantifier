@@ -56,7 +56,7 @@ jobs:
         uses: dtolnay/rust-toolchain@stable
         with:
           # Those targets are only used on macos runners so it's in an `if` to slightly speed up windows and linux builds.
-          targets: ${{ matrix.settings.platform == 'macos-latest' && 'aarch64-apple-darwin,x86_64-apple-darwin' || '' }}
+          targets: ${{ matrix.platform.os == 'macos-latest' && 'aarch64-apple-darwin,x86_64-apple-darwin' || '' }}
 
       - name: Rust cache
         uses: swatinem/rust-cache@v2
@@ -74,4 +74,4 @@ jobs:
           releaseName: ${{ steps.bump_version.outputs.version_name }}
           releaseDraft: true
           prerelease: false
-          args: ${{ matrix.settings.args }}
+          args: ${{ matrix.platform.args }}
