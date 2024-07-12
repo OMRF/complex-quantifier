@@ -1,6 +1,6 @@
 <h1><img src="https://github.com/OMRF/complex-quantifier/blob/develop/static/favicon.png" height="30" alt="Logo"/> Complex Quantifier</h1>
 
-<img alt="Screenshot of GUI" src="https://github.com/OMRF/complex-quantifier/assets/37554696/68d3f91a-4c6b-49f2-9745-a55f963837d3" width="500" />
+<img alt="Screenshot of GUI" src="https://github.com/user-attachments/assets/a92cb661-7bb7-425a-8252-adf44c5af433" width="500" />
 
 A utility for calculating geometric means from a spreadsheet **(FORMAT SENSITIVE)**, picking them into separate worksheets, and returning the calculations as an Excel workbook.
 
