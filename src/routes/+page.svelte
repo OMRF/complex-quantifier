@@ -8,6 +8,7 @@
     })
 
     const schema = z.object({
+        isBulk: z.boolean(),
         normalizingProtein: z.string().min(1),
         normalizingProteinConc: z.coerce.number().min(0),
         groups: z.array(groupSchema),
@@ -18,68 +19,57 @@
 
 <script lang="ts">
     import NormalizingProteinInputCard from './NormalizingProteinInputCard.svelte'
-    import { defaults, superForm } from 'sveltekit-superforms'
+    import SuperDebug, { defaults, superForm } from 'sveltekit-superforms'
     import { zod } from 'sveltekit-superforms/adapters'
     import SampleGroups from './SampleGroups.svelte'
     import { Button } from '$lib/components/ui/form'
+    import { toast } from 'svelte-sonner'
+    import { invoke } from '@tauri-apps/api'
+    import FormHeader from './FormHeader.svelte'
 
 
     const form = superForm(defaults({
+        isBulk: false,
         normalizingProtein: 'BSA',
         normalizingProteinConc: 8,
         groups: [],
     }, zod(schema)), {
+        resetForm: false,
         SPA: true,
         validators: zod(schema),
         onUpdate: async ({ form }) => {
             if (!form.valid) return
 
             try {
+                if (form.data.isBulk) {
+                    await invoke('process_data_bulk', {
+                        normalizingProtein: form.data.normalizingProtein,
+                        normalizingProteinConc: form.data.normalizingProteinConc
+                    })
+                } else {
+                    await invoke('process_data', {
+                        normalizingProtein: form.data.normalizingProtein,
+                        normalizingProteinConc: form.data.normalizingProteinConc,
+                        groups: form.data.groups.map(group => ({
+                            name: group.name,
+                            columns: group.columns.split(','),
+                        })),
+                    })
+                }
 
+                toast.success('Data processed successfully')
             } catch (e) {
-
+                toast.error(e as string)
             }
         },
     })
 
-    const { form: formData, enhance, submitting } = form
-
-
-    // const form = createForm({
-    //     initialValues: {
-    //         inputFile: null as File | null,
-    //         BSAConcentration: 8,
-    //         saveFolderPath: null as string | null,
-    //         groups: [{ name: '', columns: '' }],
-    //         filenamePattern: '{filename}-{month}{day}{year}-{hours}{minutes}{seconds}',
-    //     },
-    //     async onSubmit(values) {
-    //         try {
-    //             schema.parse(values)
-    //
-    //             const payload = {
-    //                 ...values,
-    //                 inputFile: values.inputFile as File,
-    //             }
-    //
-    //             await pipeThroughProcessor(payload)
-    //         } catch (e) {
-    //             if (e instanceof ZodError) {
-    //                 errors = e.errors.map(error => error.message)
-    //             }
-    //
-    //             console.error(e)
-    //         }
-    //     },
-    // })
-    //
-    // setContext('form', form)
+    const { enhance, submitting } = form
 </script>
 
+<!--<SuperDebug data={form} />-->
 <form method="POST" use:enhance class="flex flex-col space-y-8">
-    <div class="flex justify-end">
-        <Button type="submit" loading={$submitting}>Run calculations</Button>
-    </div>
+    <FormHeader {form} />
     <NormalizingProteinInputCard {form} />
     <SampleGroups {form} />
 </form>

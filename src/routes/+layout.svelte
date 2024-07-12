@@ -6,7 +6,10 @@
     import '$lib/assets/css/cal-sans.css'
 
     import '../app.css'
+    import { Toaster } from '$lib/components/ui/sonner'
 </script>
+
+<Toaster richColors />
 
 <div class="w-full h-2 bg-gradient-to-r from-[#2AF598] to-[#009EFD]" />
 
