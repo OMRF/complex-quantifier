@@ -27,44 +27,49 @@
     import { invoke } from '@tauri-apps/api'
     import FormHeader from './FormHeader.svelte'
 
+    const form = superForm(
+        defaults(
+            {
+                isBulk: false,
+                normalizingProtein: 'BSA',
+                normalizingProteinConc: 8,
+                groups: [],
+            },
+            zod(schema)
+        ),
+        {
+            resetForm: false,
+            SPA: true,
+            validators: zod(schema),
+            onUpdate: async ({ form }) => {
+                if (!form.valid) return
 
-    const form = superForm(defaults({
-        isBulk: false,
-        normalizingProtein: 'BSA',
-        normalizingProteinConc: 8,
-        groups: [],
-    }, zod(schema)), {
-        resetForm: false,
-        SPA: true,
-        validators: zod(schema),
-        onUpdate: async ({ form }) => {
-            if (!form.valid) return
+                try {
+                    if (form.data.isBulk) {
+                        await invoke('process_data_bulk', {
+                            normalizingProtein: form.data.normalizingProtein,
+                            normalizingProteinConc: form.data.normalizingProteinConc,
+                        })
+                    } else {
+                        await invoke('process_data', {
+                            normalizingProtein: form.data.normalizingProtein,
+                            normalizingProteinConc: form.data.normalizingProteinConc,
+                            groups: form.data.groups.map(group => ({
+                                name: group.name,
+                                columns: group.columns.split(','),
+                            })),
+                        })
+                    }
 
-            try {
-                if (form.data.isBulk) {
-                    await invoke('process_data_bulk', {
-                        normalizingProtein: form.data.normalizingProtein,
-                        normalizingProteinConc: form.data.normalizingProteinConc
-                    })
-                } else {
-                    await invoke('process_data', {
-                        normalizingProtein: form.data.normalizingProtein,
-                        normalizingProteinConc: form.data.normalizingProteinConc,
-                        groups: form.data.groups.map(group => ({
-                            name: group.name,
-                            columns: group.columns.split(','),
-                        })),
-                    })
+                    toast.success('Data processed successfully')
+                } catch (e) {
+                    toast.error(e as string)
                 }
+            },
+        }
+    )
 
-                toast.success('Data processed successfully')
-            } catch (e) {
-                toast.error(e as string)
-            }
-        },
-    })
-
-    const { enhance, submitting } = form
+    const { enhance } = form
 </script>
 
 <!--<SuperDebug data={form} />-->
