@@ -38,6 +38,7 @@
             zod(schema)
         ),
         {
+            dataType: 'json',
             resetForm: false,
             SPA: true,
             validators: zod(schema),
